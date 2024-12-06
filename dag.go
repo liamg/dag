@@ -705,7 +705,7 @@ func (d *DAG[T]) GetOrderedDescendants(id string) ([]string, error) {
 // empty or unknown.
 //
 // Note, the new graph is a copy of the relevant part of the original graph.
-func (d *DAG[T]) GetDescendantsGraph(id string) (*DAG[T], string, error) {
+func (d *DAG[T]) GetDescendantsGraph(id string) (*DAG[T], error) {
 
 	// recursively add the current vertex and all its descendants
 	return d.getRelativesGraph(id, false)
@@ -718,20 +718,20 @@ func (d *DAG[T]) GetDescendantsGraph(id string) (*DAG[T], string, error) {
 // empty or unknown.
 //
 // Note, the new graph is a copy of the relevant part of the original graph.
-func (d *DAG[T]) GetAncestorsGraph(id string) (*DAG[T], string, error) {
+func (d *DAG[T]) GetAncestorsGraph(id string) (*DAG[T], error) {
 
 	// recursively add the current vertex and all its ancestors
 	return d.getRelativesGraph(id, true)
 }
 
-func (d *DAG[T]) getRelativesGraph(id string, asc bool) (*DAG[T], string, error) {
+func (d *DAG[T]) getRelativesGraph(id string, asc bool) (*DAG[T], error) {
 	// sanity checking
 	if id == "" {
-		return nil, "", IDEmptyError{}
+		return nil, IDEmptyError{}
 	}
 	v, exists := d.vertexIds[id]
 	if !exists {
-		return nil, "", IDUnknownError{id}
+		return nil, IDUnknownError{id}
 	}
 
 	// create a new dag
@@ -742,11 +742,11 @@ func (d *DAG[T]) getRelativesGraph(id string, asc bool) (*DAG[T], string, error)
 	defer d.muDAG.RUnlock()
 
 	// recursively add the current vertex and all its relatives
-	newId, err := d.getRelativesGraphRec(v, newDAG, make(map[string]string), asc)
-	return newDAG, newId, err
+	err := d.getRelativesGraphRec(v, newDAG, make(map[string]struct{}), asc)
+	return newDAG, err
 }
 
-func (d *DAG[T]) getRelativesGraphRec(vertex T, newDAG *DAG[T], visited map[string]string, asc bool) (newId string, err error) {
+func (d *DAG[T]) getRelativesGraphRec(vertex T, newDAG *DAG[T], visited map[string]struct{}, asc bool) (err error) {
 
 	// copy this vertex to the new graph
 	if _, err = newDAG.AddVertex(vertex); err != nil {
@@ -756,7 +756,7 @@ func (d *DAG[T]) getRelativesGraphRec(vertex T, newDAG *DAG[T], visited map[stri
 	id := vertex.ID()
 
 	// mark this vertex as visited
-	visited[] = newId
+	visited[id] = struct{}{}
 
 	// get the direct relatives (depending on the direction either parents or children)
 	var relatives map[string]struct{}
@@ -772,13 +772,13 @@ func (d *DAG[T]) getRelativesGraphRec(vertex T, newDAG *DAG[T], visited map[stri
 		for relative := range relatives {
 
 			// if we haven't seen this relative
-			relativeId, exists := visited[relative]
+			_, exists := visited[relative]
 			if !exists {
 
 				rel := d.vertexIds[relative]
 
 				// recursively add this relative
-				if relativeId, err = d.getRelativesGraphRec(rel, newDAG, visited, asc); err != nil {
+				if err = d.getRelativesGraphRec(rel, newDAG, visited, asc); err != nil {
 					return
 				}
 			}
@@ -786,10 +786,10 @@ func (d *DAG[T]) getRelativesGraphRec(vertex T, newDAG *DAG[T], visited map[stri
 			// add edge to this relative (depending on the direction)
 			var srcID, dstID string
 			if asc {
-				srcID, dstID = relativeId, newId
+				srcID, dstID = relative, id
 
 			} else {
-				srcID, dstID = newId, relativeId
+				srcID, dstID = id, relative
 			}
 			if err = newDAG.AddEdge(srcID, dstID); err != nil {
 				return
@@ -940,7 +940,7 @@ func (d *DAG[T]) Copy() (newDAG *DAG[T], err error) {
 	newDAG = NewDAG[T]()
 
 	// create a map of visited vertices
-	visited := make(map[string]string)
+	visited := make(map[string]struct{})
 
 	// protect the graph from modification
 	d.muDAG.RLock()
@@ -948,7 +948,7 @@ func (d *DAG[T]) Copy() (newDAG *DAG[T], err error) {
 
 	// add all roots and their descendants to the new DAG
 	for _, root := range d.GetRoots() {
-		if _, err = d.getRelativesGraphRec(root, newDAG, visited, false); err != nil {
+		if err = d.getRelativesGraphRec(root, newDAG, visited, false); err != nil {
 			return
 		}
 	}
