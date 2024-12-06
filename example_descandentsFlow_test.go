@@ -2,8 +2,9 @@ package dag_test
 
 import (
 	"fmt"
-	"github.com/heimdalr/dag"
 	"sort"
+
+	"github.com/liamg/dag"
 )
 
 func ExampleDAG_DescendantsFlow() {

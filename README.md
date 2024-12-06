@@ -1,11 +1,11 @@
 # dag
 
-[![run tests](https://github.com/heimdalr/dag/workflows/Run%20Tests/badge.svg?branch=master)](https://github.com/heimdalr/dag/actions?query=branch%3Amaster)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/heimdalr/dag)](https://pkg.go.dev/github.com/heimdalr/dag)
-[![Go Report Card](https://goreportcard.com/badge/github.com/heimdalr/dag)](https://goreportcard.com/report/github.com/heimdalr/dag)
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/heimdalr/dag)
-[![CodeQL](https://github.com/heimdalr/dag/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/heimdalr/dag/actions/workflows/codeql-analysis.yml)
-<!--[![Scorecards supply-chain security](https://github.com/heimdalr/dag/actions/workflows/scorecards.yml/badge.svg)](https://github.com/heimdalr/dag/actions/workflows/scorecards.yml)-->
+[![run tests](https://github.com/liamg/dag/workflows/Run%20Tests/badge.svg?branch=master)](https://github.com/liamg/dag/actions?query=branch%3Amaster)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/liamg/dag)](https://pkg.go.dev/github.com/liamg/dag)
+[![Go Report Card](https://goreportcard.com/badge/github.com/liamg/dag)](https://goreportcard.com/report/github.com/liamg/dag)
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/liamg/dag)
+[![CodeQL](https://github.com/liamg/dag/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/liamg/dag/actions/workflows/codeql-analysis.yml)
+<!--[![Scorecards supply-chain security](https://github.com/liamg/dag/actions/workflows/scorecards.yml/badge.svg)](https://github.com/liamg/dag/actions/workflows/scorecards.yml)-->
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6402/badge)](https://bestpractices.coreinfrastructure.org/projects/6402)
 
 
@@ -16,7 +16,7 @@ duplicates and thereby always maintains a valid DAG. The implementation caches
 descendants and ancestors to speed up subsequent calls. 
 
 <!--
-github.com/heimdalr/dag:
+github.com/liamg/dag:
 
 3.770388s to add 597871 vertices and 597870 edges
 1.578741s to get descendants
@@ -48,7 +48,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/heimdalr/dag"
+	"github.com/liamg/dag"
 )
 
 func main() {

@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/heimdalr/dag"
+
+	"github.com/liamg/dag"
 )
 
 func main() {
