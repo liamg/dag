@@ -69,11 +69,6 @@ func (d *DAG[T]) AddVertexByID(id string, v T) error {
 
 func (d *DAG[T]) addVertexByID(id string, v T) error {
 
-	// sanity checking
-	if v == nil {
-		return VertexNilError{}
-	}
-
 	if _, exists := d.vertexIds[id]; exists {
 		return IDDuplicateError{id}
 	}
